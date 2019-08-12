@@ -136,8 +136,8 @@ ADD CONSTRAINT FkProfTurmaCodDepto FOREIGN KEY (CodDepto) REFERENCES Turma(CodDe
 ALTER TABLE ProfTurma
 ADD CONSTRAINT FkProfTurmaNumDisc FOREIGN KEY (NumDisc) REFERENCES Turma(NumDisc);
 
-ALTER TABLE ProfTurma
-ADD CONSTRAINT FkProfTurmaSigla FOREIGN KEY (SiglaTur) REFERENCES Turma(SiglaTur);
+-- ALTER TABLE ProfTurma
+-- ADD CONSTRAINT FkProfTurmaSigla FOREIGN KEY (SiglaTur) REFERENCES Turma(SiglaTur);
 
 ALTER TABLE ProfTurma
 ADD CONSTRAINT FkProfTurmaProfessor FOREIGN KEY (CodProf) REFERENCES Professor(CodProf);
