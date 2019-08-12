@@ -35,7 +35,6 @@ WHERE CodPeca IN (
 )
 GROUP BY CodFornec;
 
-
 -- 8 - Obter o quantidade total embarcada de peças para cada fornecedor. 
 -- Exibir o resultado por ordem descendente de quantidade total embarcada.
 -- Expected: F1: 600, F2: 400, F4: 350, F3: 200

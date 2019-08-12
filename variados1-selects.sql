@@ -166,19 +166,22 @@ NATURAL LEFT JOIN Disciplina;
 
 -- 4. Obter o nome dos professores que possuem horários conflitantes 
 -- (possuem turmas que tenham a mesma hora inicial, no mesmo dia da semana e no mesmo semestre).
+-- Expected: Null
 
-SELECT NomeProf, SiglaTur
-FROM Professor, ProfTurma, (
-    SELECT CodProf, AnoSem, DiaSem, HoraInicio, COUNT(*) Conflito
-    FROM ProfTurma
-    NATURAL JOIN Horario
-    GROUP BY CodProf, AnoSem, DiaSem, HoraInicio
+SELECT NomeProf
+FROM Horario, ProfTurma, Professor, (
+    SELECT AnoSem, DiaSem, HoraInicio, SiglaTur, COUNT(*) Conflito
+    FROM Horario
+    GROUP BY AnoSem, DiaSem, HoraInicio, SiglaTur
     HAVING Conflito > 1
 ) AS Conflito
-WHERE Professor.CodProf = ProfTurma.CodProf
-AND ProfTurma.CodProf = Conflito.CodProf;
-
-
+WHERE Conflito.AnoSem = Horario.AnoSem
+AND Conflito.DiaSem = Horario.DiaSem
+AND Conflito.HoraInicio = Horario.HoraInicio
+AND Conflito.SiglaTur = Horario.SiglaTur
+AND Horario.SiglaTur = ProfTurma.SiglaTur
+AND Professor.CodProf = ProfTurma.CodProf
+GROUP BY NomeProf;
 
 -- 5. Para cada disciplina que possui pré-requisito, obter o nome da disciplina 
 -- seguido do nome da disciplina que é seu pré-requisito (usar junções explícitas - quando possível usar junção natural).
