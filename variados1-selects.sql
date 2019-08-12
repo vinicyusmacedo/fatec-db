@@ -93,14 +93,16 @@ AND ProfTurma.CodDepto <> Professor.CodDepto;
 -- Além dos nomes, mostrar as chaves primárias das turmas em conflito.
 -- Expected: null as DiaSem and HoraInicio are PKs
 
-SELECT DISTINCT ProfTurma.CodProf, Horario.SiglaTur, 
-Horario.DiaSem, Horario.HoraInicio, Horario.NumHoras FROM ProfTurma
-NATURAL JOIN Horario
-WHERE NOT EXISTS (
-    SELECT ProfTurma.CodProf, Horario.SiglaTur, 
-    Horario.DiaSem, Horario.HoraInicio, Horario.NumHoras FROM ProfTurma
+SELECT NomeProf, SiglaTur
+FROM Professor, ProfTurma, (
+    SELECT CodProf, AnoSem, DiaSem, HoraInicio, COUNT(*) Conflito
+    FROM ProfTurma
     NATURAL JOIN Horario
-);
+    GROUP BY CodProf, AnoSem, DiaSem, HoraInicio
+    HAVING Conflito > 1
+) AS Conflito
+WHERE Professor.CodProf = ProfTurma.CodProf
+AND ProfTurma.CodProf = Conflito.CodProf;
 
 -- 10. Para cada disciplina que possui pré-requisito, obter o nome da disciplina seguido do nome da disciplina que é seu pré-requisito.
 
