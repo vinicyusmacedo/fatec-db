@@ -81,11 +81,33 @@ AND SiglaTur IN (
 -- Para cada professor que já ministrou aulas em disciplinas de outros departamentos, 
 -- obter o código do professor, seu nome, o nome de seu departamento e o nome do departamento no qual ministrou disciplina.
 
+SELECT ProfTurma.CodProf, Professor.NomeProf, 
+(SELECT NomeDepto FROM Depto WHERE CodDepto = Professor.CodDepto) NomeDepto,
+(SELECT NomeDepto FROM Depto WHERE CodDepto = ProfTurma.CodDepto) DiscDepto
+FROM ProfTurma, Professor
+WHERE ProfTurma.CodProf = Professor.CodProf
+AND ProfTurma.CodDepto <> Professor.CodDepto;
+
 -- 9. Obter o nome dos professores que possuem horários conflitantes 
 -- (possuem turmas que tenham a mesma hora inicial, no mesmo dia da semana e no mesmo semestre). 
 -- Além dos nomes, mostrar as chaves primárias das turmas em conflito.
+-- Expected: null as DiaSem and HoraInicio are PKs
+
+SELECT DISTINCT ProfTurma.CodProf, Horario.SiglaTur, 
+Horario.DiaSem, Horario.HoraInicio, Horario.NumHoras FROM ProfTurma
+NATURAL JOIN Horario
+WHERE NOT EXISTS (
+    SELECT ProfTurma.CodProf, Horario.SiglaTur, 
+    Horario.DiaSem, Horario.HoraInicio, Horario.NumHoras FROM ProfTurma
+    NATURAL JOIN Horario
+);
 
 -- 10. Para cada disciplina que possui pré-requisito, obter o nome da disciplina seguido do nome da disciplina que é seu pré-requisito.
+
+SELECT NomeDisc, 
+(SELECT NomeDisc FROM Disciplina WHERE PreReq.NumDiscPreReq = Disciplina.NumDisc) AS NomePreReq
+FROM Disciplina
+NATURAL JOIN PreReq;
 
 -- 11. Obter os nomes das disciplinas que não têm pré-requisito.
 SELECT NomeDisc FROM Disciplina
@@ -198,36 +220,102 @@ AND CodTit IS NULL;
 
 -- Parte 3
 
---1. Obter o os nomes dos professores que são do departamento denominado 'Informática', sejam doutores, e que, em 20022, ministraram alguma turma de disciplina do departamento 'Informática' que tenha mais que três créditos. Resolver a questão da seguinte forma:
+--1. Obter o os nomes dos professores que são do departamento denominado 'Informática', 
+-- sejam doutores, e que, em 20022, ministraram alguma turma de disciplina do departamento 'Informática' 
+-- que tenha mais que três créditos. Resolver a questão da seguinte forma:
 --1.1. sem consultas aninhadas e sem sintaxe explícita para junções,
 --1.2. usando SQL, em estilo de cálculo relacional, com consultas aninhadas
 --(quando possível usar IN, caso contrário usar EXISTS).
 
---2. Obter os nomes das disciplinas do departamento denominado 'Informática' que não foram oferecidas no semestre 20021. Resolver a questão da seguinte forma:
+--2. Obter os nomes das disciplinas do departamento denominado 'Informática' que não foram oferecidas no semestre 20021. 
+-- Resolver a questão da seguinte forma:
 --2.1. no estilo de álgebra relacional, isto é, sem consultas aninhadas (subselects),
 --2.2. no estilo cálculo relacional, isto é, com consultas aninhadas (subselects).
 
---3. Obter uma tabela com as seguintes colunas: código de departamento, nome do departamento, número de disciplina, créditos da disciplina, sigla da turma e capacidade da turma. A tabela deve conter cada departamento associado com cada uma de suas disciplinas e, para cada disciplina as respectivas turmas no ano semestre 20022. Caso um departamento não tenha disciplinas, as demais colunas devem aparecer vazias. Caso uma disciplina não tenha turmas, as demais colunas deve aparecer vazias.
+--3. Obter uma tabela com as seguintes colunas: 
+-- código de departamento, nome do departamento, número de disciplina, créditos da disciplina, 
+-- sigla da turma e capacidade da turma. 
+-- A tabela deve conter cada departamento associado com cada uma de suas disciplinas e, 
+-- para cada disciplina as respectivas turmas no ano semestre 20022. 
+-- Caso um departamento não tenha disciplinas, as demais colunas devem aparecer vazias. 
+-- Caso uma disciplina não tenha turmas, as demais colunas deve aparecer vazias.
 
---4. Obter uma tabela com duas colunas, contendo o nome de cada disciplina seguido do nome de cada um de seus pré-requisitos. Disciplinas sem pré- requisito têm a segunda coluna vazia.
+SELECT CodDepto, NomeDepto, NumDisc, CreditoDisc, 
+IF(AnoSem = 20022, SiglaTur, NULL) AS SiglaTur,
+IF(AnoSem = 20022, CapacTur, NULL) AS CapacTur
+FROM Depto
+NATURAL LEFT JOIN Disciplina
+NATURAL LEFT JOIN Turma;
 
---5. Obter os identificadores de todas turmas de disciplinas do departamento denominado `Informática' que não têm aula na sala de número 102 do prédio de código 43421.
+--4. Obter uma tabela com duas colunas, contendo o nome de cada disciplina 
+-- seguido do nome de cada um de seus pré-requisitos. 
+-- Disciplinas sem pré- requisito têm a segunda coluna vazia.
+
+SELECT NomeDisc, 
+(SELECT NomeDisc FROM Disciplina WHERE PreReq.NumDiscPreReq = Disciplina.NumDisc) AS NomePreReq
+FROM Disciplina
+NATURAL LEFT JOIN PreReq;
+
+--5. Obter os identificadores de todas turmas de disciplinas do departamento denominado `Informática' 
+-- que não têm aula na sala de número 102 do prédio de código 43421.
 
 --6. Obter o número de disciplinas do departamento denominado `Informática'.
 
+SELECT NomeDepto, COUNT(NumDisc)
+FROM Disciplina
+NATURAL JOIN Depto
+WHERE NomeDepto = "Informática"
+GROUP BY NomeDepto;
+
 --7. Obter o número de salas que foram usadas no ano-semestre 20021 por turmas do departamento denominado `Informática'.
 
---8. Obter os nomes das disciplinas do departamento denominado `Informática' que têm o maior número de créditos dentre as disciplinas deste departamento.
+--8. Obter os nomes das disciplinas do departamento denominado `Informática' 
+-- que têm o maior número de créditos dentre as disciplinas deste departamento.
 
---9. Para cada departamento, obter seu nome e o número de disciplinas do departamento. Obter o resultado em ordem descendente de número de disciplinas.
+SELECT NomeDisc, CreditoDisc
+FROM Disciplina
+NATURAL JOIN Depto
+WHERE NomeDepto = "Informática"
+ORDER BY CreditoDisc DESC;
 
---10. Para cada departamento, obter seu nome e os créditos totais oferecidos no ano-semestre 20022. O número de créditos oferecidos é calculado através do produto de número de créditos da disciplina pelo número de turmas oferecidas no semestre.
+--9. Para cada departamento, obter seu nome e o número de disciplinas do departamento. 
+-- Obter o resultado em ordem descendente de número de disciplinas.
+
+SELECT NomeDepto, COUNT(NumDisc) AS CountDisc
+FROM Disciplina
+NATURAL RIGHT JOIN Depto
+GROUP BY NomeDepto
+ORDER BY CountDisc DESC;
+
+--10. Para cada departamento, obter seu nome e os créditos totais oferecidos no ano-semestre 20022. 
+-- O número de créditos oferecidos é calculado através do produto de número de créditos da disciplina 
+-- pelo número de turmas oferecidas no semestre.
+
+SELECT NomeDepto, IF(AnoSem = 20022, SUM(CreditoDisc), 0) AS CreditosTotais
+FROM Depto
+NATURAL JOIN Disciplina
+NATURAL JOIN Turma
+GROUP BY NomeDepto, AnoSem;
 
 --11. Resolver a consulta da questão anterior, mas incluindo somente os departamentos que têm mais que 5 disciplinas.
 
+SELECT NomeDepto, IF(AnoSem = 20022, SUM(CreditoDisc), 0) AS CreditosTotais
+FROM Depto
+NATURAL JOIN Disciplina
+NATURAL JOIN Turma
+GROUP BY NomeDepto, AnoSem
+HAVING COUNT(NumDisc) > 5;
+
 --12. Obter os nomes dos departamentos que possuem a maior soma de créditos.
 
---13. Obter os nomes das disciplinas que em 20022, têm pelo menos uma turma cuja total de horas seja diferente do número de créditos da disciplina.
+SELECT NomeDepto, SUM(CreditoDisc)
+FROM Depto
+NATURAL JOIN Disciplina
+NATURAL LEFT JOIN Turma
+GROUP BY NomeDepto;
+
+--13. Obter os nomes das disciplinas que em 20022, têm pelo menos uma turma cuja total de horas 
+-- seja diferente do número de créditos da disciplina.
 --Resolver a questão da seguinte forma:
 --13.1. sem usar GROUP BY, com consultas aninhadas (subselects),
 --13.2. usando GROUP BY, sem consultas aninhadas.
