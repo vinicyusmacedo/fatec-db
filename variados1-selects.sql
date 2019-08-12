@@ -167,6 +167,19 @@ NATURAL LEFT JOIN Disciplina;
 -- 4. Obter o nome dos professores que possuem horários conflitantes 
 -- (possuem turmas que tenham a mesma hora inicial, no mesmo dia da semana e no mesmo semestre).
 
+SELECT NomeProf, SiglaTur
+FROM Professor, ProfTurma, (
+    SELECT CodProf, AnoSem, DiaSem, HoraInicio, COUNT(*) Conflito
+    FROM ProfTurma
+    NATURAL JOIN Horario
+    GROUP BY CodProf, AnoSem, DiaSem, HoraInicio
+    HAVING Conflito > 1
+) AS Conflito
+WHERE Professor.CodProf = ProfTurma.CodProf
+AND ProfTurma.CodProf = Conflito.CodProf;
+
+
+
 -- 5. Para cada disciplina que possui pré-requisito, obter o nome da disciplina 
 -- seguido do nome da disciplina que é seu pré-requisito (usar junções explícitas - quando possível usar junção natural).
 
@@ -186,6 +199,8 @@ NATURAL LEFT JOIN PreReq;
 
 -- 7. Para cada disciplina que tem um pré-requisito que a sua vez também tem um pré-requisito, 
 -- obter o nome da disciplina seguido do nome do pré-requisito de seu pré-requisito.
+
+-- TODO
 
 -- 8. Obter uma tabela que contém três colunas. 
 -- Na primeira coluna aparece o nome de cada disciplina que possui pré-requisito, 
@@ -261,6 +276,13 @@ NATURAL LEFT JOIN PreReq;
 --5. Obter os identificadores de todas turmas de disciplinas do departamento denominado `Informática' 
 -- que não têm aula na sala de número 102 do prédio de código 43421.
 
+SELECT SiglaTur
+FROM Horario
+NATURAL JOIN Depto
+WHERE NomeDepto = "Informática"
+AND NumSala <> 102
+AND CodPred = 43421;
+
 --6. Obter o número de disciplinas do departamento denominado `Informática'.
 
 SELECT NomeDepto, COUNT(NumDisc)
@@ -270,6 +292,13 @@ WHERE NomeDepto = "Informática"
 GROUP BY NomeDepto;
 
 --7. Obter o número de salas que foram usadas no ano-semestre 20021 por turmas do departamento denominado `Informática'.
+
+SELECT COUNT(DISTINCT NumSala, CodPred)
+FROM Horario
+NATURAL JOIN Depto
+WHERE NomeDepto = "Informática"
+AND AnoSem = 20021
+GROUP BY NomeDepto;
 
 --8. Obter os nomes das disciplinas do departamento denominado `Informática' 
 -- que têm o maior número de créditos dentre as disciplinas deste departamento.
