@@ -354,7 +354,21 @@ GROUP BY NomeDepto;
 --13.1. sem usar GROUP BY, com consultas aninhadas (subselects),
 --13.2. usando GROUP BY, sem consultas aninhadas.
 
+-- maybe? https://stackoverflow.com/questions/5373885/how-do-i-find-maximum-in-a-column-without-using-max-function
 --14. Obter os nomes dos professores que, em 20022, deram aula em mais de uma turma.
 --Resolver a questão da seguinte forma:
 --14.1. sem funções de agregação (tipo COUNT, MIN,MAX,AVG,SUM),
+
+-- TODO
+
 --14.2. ou ainda, com funções de agregação.
+
+SELECT NomeProf
+FROM (
+    SELECT CodProf, COUNT(*) Turmas
+    FROM ProfTurma
+    WHERE AnoSem = 20022
+    GROUP BY CodProf
+    HAVING Turmas > 1
+) AS MaisDeUmaTurma
+NATURAL JOIN Professor;
