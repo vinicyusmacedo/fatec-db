@@ -82,12 +82,12 @@ ADD CONSTRAINT PkPredio PRIMARY KEY (CodPred);
 
 -- Primary Keys and Foreign Keys
 ALTER TABLE Disciplina 
-ADD CONSTRAINT PkDisciplina PRIMARY KEY (NumDisc);
+ADD CONSTRAINT PkDisciplina PRIMARY KEY (NumDisc, CodDepto);
 
 ALTER TABLE Disciplina
 ADD CONSTRAINT FkDisciplinaDepto FOREIGN KEY (CodDepto) REFERENCES Depto(CodDepto);
 
-ALTER TABLE Turma 
+ALTER TABLE Turma
 ADD CONSTRAINT PkTurmaAnoSigla PRIMARY KEY (AnoSem, SiglaTur);
 
 ALTER TABLE Turma
@@ -194,6 +194,9 @@ INSERT INTO Professor VALUES (66, 'ADM01', 3, 'Gumball');
 INSERT INTO Professor VALUES (67, 'ADM01', NULL, 'Zé Ninguém');
 INSERT INTO ProfTurma VALUES (20021, 'INF01', 42, 'IN', 64);
 INSERT INTO ProfTurma VALUES (20021, 'INF01', 44, 'IN', 65);
+INSERT INTO ProfTurma VALUES (20021, 'INF01', 45, 'IA', 65);
+INSERT INTO ProfTurma VALUES (20022, 'INF01', 45, 'IA', 65);
+INSERT INTO ProfTurma VALUES (20022, 'INF01', 45, 'AD', 65);
 INSERT INTO ProfTurma VALUES (20021, 'ADM01', 24, 'AD', 64);
 INSERT INTO ProfTurma VALUES (20021, 'ADM01', 24, 'AD', 67);
 INSERT INTO ProfTurma VALUES (20012, 'ADM01', 24, 'AD', 66);
