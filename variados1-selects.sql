@@ -203,7 +203,15 @@ NATURAL LEFT JOIN PreReq;
 -- 7. Para cada disciplina que tem um pré-requisito que a sua vez também tem um pré-requisito, 
 -- obter o nome da disciplina seguido do nome do pré-requisito de seu pré-requisito.
 
--- TODO
+SELECT
+(SELECT NomeDisc FROM Disciplina WHERE PreReq2.NumDisc = Disciplina.NumDisc) AS NomeDisc,
+(SELECT NomeDisc FROM Disciplina WHERE PreReq2.NumDiscPreReq = Disciplina.NumDisc) AS NomeDiscPreReq,
+(
+    SELECT NomeDisc FROM Disciplina, PreReq
+    WHERE PreReq.NumDiscPreReq = Disciplina.NumDisc
+    AND PreReq2.NumDiscPreReq = PreReq.NumDisc
+) AS NomeDiscPreReqPreReq
+FROM PreReq AS PreReq2;
 
 -- 8. Obter uma tabela que contém três colunas. 
 -- Na primeira coluna aparece o nome de cada disciplina que possui pré-requisito, 
