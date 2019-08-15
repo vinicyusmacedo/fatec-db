@@ -243,14 +243,53 @@ AND CodTit IS NULL;
 --1. Obter o os nomes dos professores que são do departamento denominado 'Informática', 
 -- sejam doutores, e que, em 20022, ministraram alguma turma de disciplina do departamento 'Informática' 
 -- que tenha mais que três créditos. Resolver a questão da seguinte forma:
---1.1. sem consultas aninhadas e sem sintaxe explícita para junções,
+--1.1. sem consultas aninhadas e sem sintaxe explícita para junções, 
+
+-- Theta join?
+
+SELECT NomeProf
+FROM Professor, ProfTurma, Disciplina, Depto, Titulacao
+WHERE ProfTurma.NumDisc = Disciplina.NumDisc
+AND ProfTurma.CodProf = Professor.CodProf
+AND Disciplina.CodDepto = Depto.CodDepto
+AND Professor.CodDepto = Depto.CodDepto
+AND Professor.CodTit = Titulacao.CodTit
+AND NomeDepto = "Informática"
+AND AnoSem = 20022
+AND NomeTit = "Doutor"
+AND CreditoDisc > 3;
+
 --1.2. usando SQL, em estilo de cálculo relacional, com consultas aninhadas
 --(quando possível usar IN, caso contrário usar EXISTS).
+
+-- TODO
 
 --2. Obter os nomes das disciplinas do departamento denominado 'Informática' que não foram oferecidas no semestre 20021. 
 -- Resolver a questão da seguinte forma:
 --2.1. no estilo de álgebra relacional, isto é, sem consultas aninhadas (subselects),
+
+-- natural join?
+
+-- TODO
+
 --2.2. no estilo cálculo relacional, isto é, com consultas aninhadas (subselects).
+
+SELECT NomeDisc
+FROM Disciplina
+WHERE CodDepto IN (
+    SELECT CodDepto
+    FROM Depto
+    WHERE NomeDepto = "Informática"
+)
+AND NomeDisc NOT IN (
+    SELECT NomeDisc
+    FROM Disciplina
+    WHERE NumDisc IN (
+        SELECT NumDisc
+        FROM Turma
+        WHERE AnoSem = 20021 
+    )
+);
 
 --3. Obter uma tabela com as seguintes colunas: 
 -- código de departamento, nome do departamento, número de disciplina, créditos da disciplina, 
@@ -353,6 +392,16 @@ GROUP BY NomeDepto;
 --Resolver a questão da seguinte forma:
 --13.1. sem usar GROUP BY, com consultas aninhadas (subselects),
 --13.2. usando GROUP BY, sem consultas aninhadas.
+
+-- TODO
+
+SELECT NomeDisc, SiglaTur, CreditoDisc, SUM(NumHoras) AS SumHoras
+FROM Horario, Disciplina
+WHERE Horario.NumDisc = Disciplina.NumDisc
+AND AnoSem = 20022
+GROUP BY NomeDisc, SiglaTur, CreditoDisc
+HAVING SumHoras <> CreditoDisc;
+
 
 -- maybe? https://stackoverflow.com/questions/5373885/how-do-i-find-maximum-in-a-column-without-using-max-function
 --14. Obter os nomes dos professores que, em 20022, deram aula em mais de uma turma.
