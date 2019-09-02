@@ -1,4 +1,4 @@
--- Exercícios
+    -- Exercícios
 -- 1. Obter os códigos dos diferentes departamentos que tem turmas no ano-semestre 2002/1
 SELECT CodDepto FROM Turma
 WHERE AnoSem = 20021;
