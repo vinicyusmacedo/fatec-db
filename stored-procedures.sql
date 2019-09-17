@@ -17,10 +17,9 @@ CREATE TABLE IF NOT EXISTS PreReqList (
 
 DELIMITER //
 
-CREATE PROCEDURE PreReqProc()
+CREATE PROCEDURE PreReqProc(Nivel INT, NivelMax INT)
 BEGIN
     DECLARE Done BOOLEAN DEFAULT FALSE;
-    DECLARE Nivel INT DEFAULT 1;
     DECLARE NomeDisc, NomeDiscPreReq VARCHAR(25);
     DECLARE cur CURSOR FOR 
         SELECT Disciplina.NomeDisc, DiscPre.NomeDisc, Nivel FROM PreReq
@@ -39,12 +38,16 @@ BEGIN
         END IF;
         INSERT INTO PreReqList VALUES (NomeDisc, NomeDiscPreReq, Nivel);
         SET Nivel = Nivel + 1;
+        IF Nivel <= NivelMax THEN
+            CALL PreReqProc(Nivel, NivelMax);
+            LEAVE fetch_loop;
+        END IF;
     END LOOP;
     CLOSE cur;
 END//
 
 DELIMITER ;
 
-CALL PreReqProc();
+CALL PreReqProc(1, 3);
 
 SELECT * FROM PreReqList;
