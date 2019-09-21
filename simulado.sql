@@ -17,7 +17,7 @@ AND PreReq.NumDiscPreReq = DiscPre.NumDisc
 
 UNION ALL
 
-SELECT Disciplina.NomeDisc, DiscPre.NomeDisc, 2 AS Nivel
+SELECT Disciplina.NomeDisc, DiscPre.NomeDisc, 2
 FROM (
     (Disciplina NATURAL JOIN PreReq)
     JOIN PreReq AS PrePreReq
@@ -30,7 +30,7 @@ AND PrePreReq.NumDiscPreReq = DiscPre.NumDisc
 
 UNION ALL
 
-SELECT Disciplina.NomeDisc, DiscPre.NomeDisc, 3 AS Nivel
+SELECT Disciplina.NomeDisc, DiscPre.NomeDisc, 3
 FROM (
     (
         (Disciplina NATURAL JOIN PreReq)
