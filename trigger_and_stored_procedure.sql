@@ -1,8 +1,8 @@
-drop table PreReqList;
-drop table PreReqNomeList;
-drop procedure PreReqProc;
-drop procedure GetNomeDisc;
-drop trigger SaveAsNomeDisc;
+drop table if exists PreReqList;
+drop table if exists PreReqNomeList;
+drop procedure if exists PreReqProc;
+drop procedure if exists GetNomeDisc;
+drop trigger if exists SaveAsNomeDisc;
 
 CREATE TABLE IF NOT EXISTS PreReqList (
     NumDisc INT,
@@ -56,17 +56,19 @@ BEGIN
 
     OPEN cur;
 
-    fetch_loop: LOOP
-        FETCH cur INTO NumDiscPreReqVar;
-        IF Done THEN
-            LEAVE fetch_loop;
-        END IF;
-        INSERT INTO PreReqList VALUES (NumDiscSupplied, NumDiscPreReqVar, Nivel);
-        SET Nivel = Nivel + 1;
-        IF Nivel > NivelMax THEN
-            LEAVE fetch_loop;
-        END IF;
-        CALL PreReqProc(NumDiscPreReqVar, Nivel, NivelMax);
+    nivel_loop: LOOP
+        fetch_loop: LOOP
+            FETCH cur INTO NumDiscPreReqVar;
+            IF Done THEN
+                LEAVE fetch_loop;
+            END IF;
+            INSERT INTO PreReqList VALUES (NumDiscSupplied, NumDiscPreReqVar, Nivel);
+        END LOOP;
+    SET Nivel = Nivel + 1;
+    IF Nivel > NivelMax THEN
+        LEAVE nivel_loop;
+    END IF;
+    CALL PreReqProc(NumDiscPreReqVar, Nivel, NivelMax);
     END LOOP;
     CLOSE cur;
 END//
