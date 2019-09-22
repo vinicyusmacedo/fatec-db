@@ -22,7 +22,7 @@ BEGIN
     DECLARE Done BOOLEAN DEFAULT FALSE;
     DECLARE NomeDisc, NomeDiscPreReq VARCHAR(25);
     DECLARE cur CURSOR FOR 
-        SELECT Disciplina.NomeDisc, DiscPre.NomeDisc, Nivel+1 FROM PreReq
+        SELECT Disciplina.NomeDisc, DiscPre.NomeDisc FROM PreReq
         NATURAL JOIN Disciplina
         JOIN Disciplina AS DiscPre
         WHERE PreReq.NumDiscPreReq = DiscPre.NumDisc
@@ -32,11 +32,12 @@ BEGIN
     OPEN cur;
 
     fetch_loop: LOOP
-        FETCH cur INTO NomeDisc, NomeDiscPreReq, Nivel;
+        FETCH cur INTO NomeDisc, NomeDiscPreReq;
         IF Done THEN
             LEAVE fetch_loop;
         END IF;
         INSERT INTO PreReqList VALUES (NomeDisc, NomeDiscPreReq, Nivel);
+        SET Nivel = Nivel + 1;
         IF Nivel <= NivelMax THEN
             CALL PreReqProc(Nivel, NivelMax);
             LEAVE fetch_loop;
