@@ -1,0 +1,12 @@
+CREATE DATABASE IF NOT EXISTS yourmusic;
+
+USE yourmusic;
+
+CREATE TABLE Albums (
+	AlbumId INT AUTO_INCREMENT,
+	Artist VARCHAR(100),
+	Album VARCHAR(100),
+	CoverURL VARCHAR(200),
+	PRIMARY KEY (AlbumId)
+);
+
