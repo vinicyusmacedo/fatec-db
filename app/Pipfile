@@ -10,6 +10,7 @@ flask = "*"
 jsonify = "*"
 mysqlclient = "*"
 mysql-connector-python = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"
